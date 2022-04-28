@@ -94,20 +94,16 @@ def exception_handler(driver, mode, ele):
 
 if __name__ == "__main__":
 
-  ROOT_URL = "https://www.udemy.com/"
+    ROOT_URL = "https://www.udemy.com/"
 
-  options = Options()
-  options.headless = True
+    options = Options()
+    options.headless = True
 
-  driver = webdriver.Firefox(options=options)
+    driver = webdriver.Firefox(options=options)
 
-  driver.get(ROOT_URL)
+    driver.get(ROOT_URL)
 
-  # u154-popper-trigger--1
-  temps = driver.find_elements(By.ID, "u154-popper-trigger--1")
+    # u154-popper-trigger--1
+    temps = driver.find_elements(By.ID, "u154-popper-trigger--1")
 
-  categoryBtn = temps[0]
-  
-
-
-
+    categoryBtn = temps[0]
