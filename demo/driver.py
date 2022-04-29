@@ -9,17 +9,14 @@ import matplotlib.pyplot as plt
 st.set_page_config(layout="wide")
 
 CATEGORY = [
-	'Program Management', 'Manufacturing & Supply Chain',
-	'Technical Solutions', 'Developer Relations',
-	'Hardware Engineering', 'Partnerships',
-	'Product & Customer Support', 'Software Engineering',
-	'Data Center & Network', 'Business Strategy', 'Technical Writing',
-	'Technical Infrastructure', 'IT & Data Management',
-	'Marketing & Communications', 'Network Engineering',
-	'Sales & Account Management', 'Sales Operations', 'Finance',
-	'Legal & Government Relations', 'Administrative',
-	'User Experience & Design', 'People Operations',
-	'Real Estate & Workplace Services'
+        {'icon': "far fa-copy", 'label':"Left End"},
+        {'id':'Copy','icon':"🐙",'label':"Copy"},
+        {'icon': "far fa-chart-bar", 'label':"Chart"},#no tooltip message
+        {'icon': "far fa-address-book", 'label':"Book"},
+        {'id':' Crazy return value 💀','icon': "💀", 'label':"Calendar"},
+        {'icon': "far fa-clone", 'label':"Component"},
+        {'icon': "fas fa-tachometer-alt", 'label':"Dashboard",'ttip':"I'm the Dashboard tooltip!"}, #can add a tooltip message
+        {'icon': "far fa-copy", 'label':"Right End"},
 ]
 
 text = 'Fun, fun, awesome, awesome, tubular, astounding, superb, great, amazing, amazing, amazing, amazing'
