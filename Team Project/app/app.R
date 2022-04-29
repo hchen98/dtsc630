@@ -1,0 +1,184 @@
+# DTSC 630 - M01/Spring 2022
+# Data Visualization
+# Dr. Cheng
+# Team Members: Michael Trzaskoma, Hui Chen, Bofan He
+# webdemo: https://bofan.shinyapps.io/DTSC630/
+
+############################################################################
+# Project Name: Job skillset seeking recommender	
+
+# Project Description:
+
+# In this project, we are going to build a web-server based job skillset recommendation engine. 
+# The dataset is from Kaggle 
+# (URL: https://www.kaggle.com/code/rayjohnsoncomedy/job-skills/data?select=job_skills.csv) 
+# with 1250 records and 7 features. The users would need to input their skillset(s) 
+# in order to find the optimal job/title/position by our recommendation engine. 
+# Also, the interactive visualization graphs will be used in this project are as follows:
+# Word Cloud
+# Pie chart
+# Radar Charts
+
+############################################################################
+# This is a Shiny web application. You can run the application by clicking
+# the 'Run App' button above.
+#
+# Find out more about building applications with Shiny here:
+#
+#    http://shiny.rstudio.com/
+#
+############################################################################
+projectName <- c("Job Skillset Seeking Recommender")
+
+
+library(shiny)
+
+##################################wordcloud#############################
+library(tm)
+library(wordcloud)
+library(memoise)
+
+# The list of valid books
+books <<- list("ML engineer" = "ML engineer",
+               "programmer" = "programmer",
+               "UXUI designer" = "UXUI designer")
+
+# Using "memoise" to automatically cache the results
+getTermMatrix <- memoise(function(book) {
+    # Careful not to let just any name slip in here; a
+    # malicious user could manipulate this value.
+    if (!(book %in% books))
+        stop("Unknown book")
+    
+    text <- readLines(sprintf("./%s.txt.gz", book),
+                      encoding="UTF-8")
+    
+    myCorpus = Corpus(VectorSource(text))
+    myCorpus = tm_map(myCorpus, content_transformer(tolower))
+    myCorpus = tm_map(myCorpus, removePunctuation)
+    myCorpus = tm_map(myCorpus, removeNumbers)
+    myCorpus = tm_map(myCorpus, removeWords,
+                      c(stopwords("SMART"), "thy", "thou", "thee", "the", "and", "but"))
+    
+    myDTM = TermDocumentMatrix(myCorpus,
+                               control = list(minWordLength = 1))
+    
+    m = as.matrix(myDTM)
+    
+    sort(rowSums(m), decreasing = TRUE)
+})
+
+##################################wordcloud#############################
+
+# Define UI for application that draws a histogram
+ui <- fluidPage(
+
+    # Application title
+    titlePanel(projectName),
+
+    # Sidebar with a slider input for number of bins 
+    sidebarLayout(
+        sidebarPanel(
+            h3("Group Project"),
+            p("DTSC 630 - M01/Spring 2022"),
+            p("Data Visualization"),
+            p("Dr. Cheng"),
+            p("Team Members: Michael Trzaskoma, Hui Chen, Bofan He"),
+            # Add weidgts
+            
+            fluidRow(
+                column(3, 
+                       checkboxGroupInput("checkGroup", 
+                                          h3("Select Program languages skillset(s):"), 
+                                          choices = list("Python" = "Python", 
+                                                         "R" = "R", 
+                                                         "Java" = "Java",
+                                                         "SQL" = "SQL",
+                                                         "C++" = "C++"),
+                                          selected = "Python")),
+            ),
+
+            # multi sel dropdown
+            fluidRow(
+                selectInput("skill", "Choose your skills:",multiple = TRUE,
+                            list(`Programing Language` = list("Python", "C++", "Java","R"),
+                                 `Machine learning` = list("OpenCV", "SVM", "CNN","NLP","RNN"))
+                ),
+            ),
+            
+            ##################################wordcloud#############################
+            # Sidebar with a slider and selection inputs
+            sidebarPanel(
+                selectInput("selection", "Choose a job title:",
+                            choices = books),
+                actionButton("update", "Change"),
+                hr(),
+                sliderInput("freq",
+                            "Minimum Frequency:",
+                            min = 1,  max = 50, value = 15),
+                sliderInput("max",
+                            "Maximum Number of Words:",
+                            min = 1,  max = 300,  value = 100)
+            ),
+            ##################################wordcloud#############################
+            
+        ),
+        
+
+        # Show a plot of the generated distribution
+        mainPanel(
+            textOutput("selecteds_sk1"),
+            textOutput("result"), # multi sel dropdown
+            
+            ##################################wordcloud#############################
+            plotOutput("plot")
+            ##################################wordcloud#############################
+            
+        )
+        
+        
+    )
+)
+
+# Define server logic required to draw a histogram
+server <- function(input, output, session) {
+    
+    output$selecteds_sk1 <- renderText({ 
+        paste("You have selected", input$checkGroup)
+    })
+    
+    # multi sel dropdown
+    output$result <- renderText({
+        paste("You chose", input$skill)
+    })
+    
+    ##################################wordcloud#############################
+    # Define a reactive expression for the document term matrix
+    terms <- reactive({
+        # Change when the "update" button is pressed...
+        input$update
+        # ...but not for anything else
+        isolate({
+            withProgress({
+                setProgress(message = "Processing corpus...")
+                getTermMatrix(input$selection)
+            })
+        })
+    })
+    
+    # Make the wordcloud drawing predictable during a session
+    wordcloud_rep <- repeatable(wordcloud)
+    
+    output$plot <- renderPlot({
+        v <- terms()
+        wordcloud_rep(names(v), v, scale=c(4,0.5),
+                      min.freq = input$freq, max.words=input$max,
+                      colors=brewer.pal(8, "Dark2"))
+    })
+    
+    ##################################wordcloud#############################
+    
+}
+
+# Run the application 
+shinyApp(ui = ui, server = server)
