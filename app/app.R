@@ -141,7 +141,16 @@ ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
                  ##################################About Page###############################
                    tabPanel("About", 
                             
-                            h2("Project Description:"),
+                            h4("Group Project Info:"),
+                            p("DTSC 630 - M01/Spring 2022"),
+                            p("Data Visualization"),
+                            p("Dr. Cheng"),
+                            p(a("Demo Web", href="https://bofan.shinyapps.io/DTSC630/")),
+
+                            
+                            hr(),
+                            
+                            h4("Project Description:"),
                             
                             p("In this project, we are going to build a web-server based job skillset recommendation engine.
                             The dataset is from Kaggle", a("job-skills",href="https://www.kaggle.com/code/rayjohnsoncomedy/job-skills/data?select=job_skills.csv" , target="_blank"),
