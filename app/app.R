@@ -38,19 +38,19 @@ library(tm)
 library(wordcloud)
 library(memoise)
 
-# The list of valid books
-books <<- list("ML engineer" = "ML engineer",
+# The list of valid jobs
+jobs <<- list("ML engineer" = "ML engineer",
                "programmer" = "programmer",
                "UXUI designer" = "UXUI designer")
 
 # Using "memoise" to automatically cache the results
-getTermMatrix <- memoise(function(book) {
+getTermMatrix <- memoise(function(job) {
     # Careful not to let just any name slip in here; a
     # malicious user could manipulate this value.
-    if (!(book %in% books))
-        stop("Unknown book")
+    if (!(job %in% jobs))
+        stop("Unknown job")
     
-    text <- readLines(sprintf("./%s.txt.gz", book),
+    text <- readLines(sprintf("./%s.txt.gz", job),
                       encoding="UTF-8")
     
     myCorpus = Corpus(VectorSource(text))
@@ -71,74 +71,102 @@ getTermMatrix <- memoise(function(book) {
 ##################################wordcloud#############################
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(
+ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
+                 ##################################Graghic Page#############################
+                   tabPanel("Graphic", fluidPage(
+                       
+                       # Application title
+                       titlePanel(projectName),
+                       
+                       # Sidebar with a slider input for number of bins 
+                       sidebarLayout(
+                           sidebarPanel(
+                               h3("Group Project"),
+                               p("DTSC 630 - M01/Spring 2022"),
+                               p("Data Visualization"),
+                               p("Dr. Cheng"),
+                               p("Team Members: Michael Trzaskoma, Hui Chen, Bofan He"),
+                               # Add weidgts
+                               
+                               fluidRow(
+                                   column(3, 
+                                          checkboxGroupInput("checkGroup", 
+                                                             h3("Select Program languages skillset(s):"), 
+                                                             choices = list("Python" = "Python", 
+                                                                            "R" = "R", 
+                                                                            "Java" = "Java",
+                                                                            "SQL" = "SQL",
+                                                                            "C++" = "C++"),
+                                                             selected = "Python")),
+                               ),
+                               
+                               # multi sel dropdown
+                               fluidRow(
+                                   selectInput("skill", "Choose your skills:",multiple = TRUE,
+                                               list(`Programing Language` = list("Python", "C++", "Java","R"),
+                                                    `Machine learning` = list("OpenCV", "SVM", "CNN","NLP","RNN"))
+                                   ),
+                               ),
+                               
+                               ##################################wordcloud#############################
+                               # Sidebar with a slider and selection inputs
+                               sidebarPanel(
+                                   selectInput("selection", "Choose a job title:",
+                                               choices = jobs),
+                                   actionButton("update", "Change"),
+                                   hr(),
+                                   sliderInput("freq",
+                                               "Minimum Frequency:",
+                                               min = 1,  max = 50, value = 15),
+                                   sliderInput("max",
+                                               "Maximum Number of Words:",
+                                               min = 1,  max = 300,  value = 100)
+                               ),
+                               ##################################wordcloud#############################
+                               
+                           ),
+                           
+                           # Show a plot 
+                           mainPanel(
+                               tabsetPanel(
+                                   tabPanel("user selection1",textOutput("selecteds_sk1")),
+                                   tabPanel("user selection2",textOutput("result")), # multi sel dropdown
+                                   tabPanel("word cloud",plotOutput("plot")) # word cloud
+                               )
+                           )
+                       )
+                   )),
+                 ##################################Graghic Page#############################
+                 
+                 ##################################About Page###############################
+                   tabPanel("About", 
+                            
+                            h2("Project Description:"),
+                            
+                            p("In this project, we are going to build a web-server based job skillset recommendation engine.
+                            The dataset is from Kaggle", a("job-skills",href="https://www.kaggle.com/code/rayjohnsoncomedy/job-skills/data?select=job_skills.csv" , target="_blank"),
+                            "with 1250 records and 7 features. The users would need to input their skillset(s) in order to find the optimal job/title/position by our recommendation engine. "),
 
-    # Application title
-    titlePanel(projectName),
+                            hr(),
+                            h5("Also, the interactive visualization graphs will be used in this project are as follows:"),
+                            p("Word Cloud"),
+                            p("Pie chart"),
+                            p("Radar Charts"),
 
-    # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-            h3("Group Project"),
-            p("DTSC 630 - M01/Spring 2022"),
-            p("Data Visualization"),
-            p("Dr. Cheng"),
-            p("Team Members: Michael Trzaskoma, Hui Chen, Bofan He"),
-            # Add weidgts
-            
-            fluidRow(
-                column(3, 
-                       checkboxGroupInput("checkGroup", 
-                                          h3("Select Program languages skillset(s):"), 
-                                          choices = list("Python" = "Python", 
-                                                         "R" = "R", 
-                                                         "Java" = "Java",
-                                                         "SQL" = "SQL",
-                                                         "C++" = "C++"),
-                                          selected = "Python")),
-            ),
-
-            # multi sel dropdown
-            fluidRow(
-                selectInput("skill", "Choose your skills:",multiple = TRUE,
-                            list(`Programing Language` = list("Python", "C++", "Java","R"),
-                                 `Machine learning` = list("OpenCV", "SVM", "CNN","NLP","RNN"))
-                ),
-            ),
-            
-            ##################################wordcloud#############################
-            # Sidebar with a slider and selection inputs
-            sidebarPanel(
-                selectInput("selection", "Choose a job title:",
-                            choices = books),
-                actionButton("update", "Change"),
-                hr(),
-                sliderInput("freq",
-                            "Minimum Frequency:",
-                            min = 1,  max = 50, value = 15),
-                sliderInput("max",
-                            "Maximum Number of Words:",
-                            min = 1,  max = 300,  value = 100)
-            ),
-            ##################################wordcloud#############################
-            
-        ),
-        
-
-        # Show a plot of the generated distribution
-        mainPanel(
-            textOutput("selecteds_sk1"),
-            textOutput("result"), # multi sel dropdown
-            
-            ##################################wordcloud#############################
-            plotOutput("plot")
-            ##################################wordcloud#############################
-            
-        )
-        
-        
-    )
-)
+                            ),
+                 
+                 ##################################About Page###############################
+                 
+                   tabPanel("Team", 
+                            p("Hui(Henry) Chen",style = "font-size:25px"),
+                            p("email: hchen60@nyit.edu"),
+                            p("Bofan He",style = "font-size:25px"),
+                            p("email: bhe@nyit.edu"),
+                            p("Michael Trzaskoma",style = "font-size:25px"),
+                            p("email: mtrzasko@nyit.edu"),
+                            )
+                 )
+    
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
