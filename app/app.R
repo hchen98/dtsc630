@@ -48,9 +48,6 @@ library(wordcloud)
 ##################################wordcloud#############################
 
 
-
-
-
 # Define UI for application that draws a histogram
 ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
                  ##################################Graghic Page#############################
@@ -86,19 +83,19 @@ ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
                                ),
                                
                                ##################################wordcloud#############################
-                               # Sidebar with a slider and selection inputs
-                               fluidRow(
-                                   selectInput("selection", "Choose a job title:",
-                                               choices = jobs),
-                                   actionButton("update", "Change"),
-                                   hr(),
-                                   sliderInput("freq",
-                                               "Minimum Frequency:",
-                                               min = 1,  max = 50, value = 15),
-                                   sliderInput("max",
-                                               "Maximum Number of Words:",
-                                               min = 1,  max = 300,  value = 100)
-                               ),
+                               # # Sidebar with a slider and selection inputs
+                               # fluidRow(
+                               #     selectInput("selection", "Choose a job title:",
+                               #                 choices = jobs),
+                               #     actionButton("update", "Change"),
+                               #     hr(),
+                               #     sliderInput("freq",
+                               #                 "Minimum Frequency:",
+                               #                 min = 1,  max = 50, value = 15),
+                               #     sliderInput("max",
+                               #                 "Maximum Number of Words:",
+                               #                 min = 1,  max = 300,  value = 100)
+                               # ),
                                ##################################wordcloud#############################
                                
                            ),
@@ -203,29 +200,29 @@ server <- function(input, output, session) {
     ##################################radar chart#############################
     
     ##################################wordcloud#############################
-    # Define a reactive expression for the document term matrix
-    terms <- reactive({
-        # Change when the "update" button is pressed...
-        input$update
-        # ...but not for anything else
-        isolate({
-            withProgress({
-                setProgress(message = "Processing corpus...")
-                getTermMatrix(input$selection)
-            })
-        })
-    })
-    
-    # Make the wordcloud drawing predictable during a session
-    wordcloud_rep <- repeatable(wordcloud)
-    
-    output$plot <- renderPlot({
-        v <- terms()
-        wordcloud_rep(names(v), v, scale=c(4,0.5),
-                      min.freq = input$freq, max.words=input$max,
-                      colors=brewer.pal(8, "Dark2"))
-    })
-    
+    # # Define a reactive expression for the document term matrix
+    # terms <- reactive({
+    #     # Change when the "update" button is pressed...
+    #     input$update
+    #     # ...but not for anything else
+    #     isolate({
+    #         withProgress({
+    #             setProgress(message = "Processing corpus...")
+    #             getTermMatrix(input$selection)
+    #         })
+    #     })
+    # })
+    # 
+    # # Make the wordcloud drawing predictable during a session
+    # wordcloud_rep <- repeatable(wordcloud)
+    # 
+    # output$plot <- renderPlot({
+    #     v <- terms()
+    #     wordcloud_rep(names(v), v, scale=c(4,0.5),
+    #                   min.freq = input$freq, max.words=input$max,
+    #                   colors=brewer.pal(8, "Dark2"))
+    # })
+    # 
     ##################################wordcloud#############################
     
 }
