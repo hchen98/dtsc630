@@ -50,6 +50,11 @@ library(wordcloud)
 
 # Define UI for application that draws a histogram
 ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
+                 ##################################Intro Page#############################
+                 tabPanel("Reference", 
+                          tags$iframe(style="height:400px; width:100%; scrolling=yes", 
+                                            src="test.pdf")),
+                 ##################################Intro Page#############################
                  ##################################Graghic Page#############################
                    tabPanel("Graphic", fluidPage(
                        
