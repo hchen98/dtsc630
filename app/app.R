@@ -35,41 +35,21 @@ library(shiny)
 library(plotly)
 
 ##################################wordcloud#############################
+# Load pkg
+library(reshape)
 library(tm)
 library(wordcloud)
-library(memoise)
 
-# The list of valid jobs
-jobs <<- list("ML engineer" = "ML engineer",
-               "programmer" = "programmer",
-               "UXUI designer" = "UXUI designer")
 
-# Using "memoise" to automatically cache the results
-getTermMatrix <- memoise(function(job) {
-    # Careful not to let just any name slip in here; a
-    # malicious user could manipulate this value.
-    if (!(job %in% jobs))
-        stop("Unknown job")
-    
-    text <- readLines(sprintf("./%s.txt.gz", job),
-                      encoding="UTF-8")
-    
-    myCorpus = Corpus(VectorSource(text))
-    myCorpus = tm_map(myCorpus, content_transformer(tolower))
-    myCorpus = tm_map(myCorpus, removePunctuation)
-    myCorpus = tm_map(myCorpus, removeNumbers)
-    myCorpus = tm_map(myCorpus, removeWords,
-                      c(stopwords("SMART"), "thy", "thou", "thee", "the", "and", "but"))
-    
-    myDTM = TermDocumentMatrix(myCorpus,
-                               control = list(minWordLength = 1))
-    
-    m = as.matrix(myDTM)
-    
-    sort(rowSums(m), decreasing = TRUE)
-})
+
+
+
 
 ##################################wordcloud#############################
+
+
+
+
 
 # Define UI for application that draws a histogram
 ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
@@ -82,24 +62,20 @@ ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
                        # Sidebar with a slider input for number of bins 
                        sidebarLayout(
                            sidebarPanel(
-                               h3("Group Project"),
-                               p("DTSC 630 - M01/Spring 2022"),
-                               p("Data Visualization"),
-                               p("Dr. Cheng"),
-                               p("Team Members: Michael Trzaskoma, Hui Chen, Bofan He"),
                                # Add weidgts
                                
-                               fluidRow(
-                                   column(3, 
-                                          checkboxGroupInput("checkGroup", 
-                                                             h3("Select Program languages skillset(s):"), 
-                                                             choices = list("Python" = "Python", 
-                                                                            "R" = "R", 
-                                                                            "Java" = "Java",
-                                                                            "SQL" = "SQL",
-                                                                            "C++" = "C++"),
-                                                             selected = "Python")),
-                               ),
+                               # fluidRow(
+                               #     column(3,
+                               #            checkboxGroupInput("checkGroup",
+                               #                               h3("Select Program languages skillset(s):"),
+                               #                               choices = list("Python" = "Python",
+                               #                                              "R" = "R",
+                               #                                              "Java" = "Java",
+                               #                                              "SQL" = "SQL",
+                               #                                              "C++" = "C++"),
+                               #                               selected = "Python")),
+                               # ),
+                               
                                
                                # multi sel dropdown
                                fluidRow(
@@ -111,7 +87,7 @@ ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
                                
                                ##################################wordcloud#############################
                                # Sidebar with a slider and selection inputs
-                               sidebarPanel(
+                               fluidRow(
                                    selectInput("selection", "Choose a job title:",
                                                choices = jobs),
                                    actionButton("update", "Change"),
