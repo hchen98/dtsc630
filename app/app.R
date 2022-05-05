@@ -32,6 +32,7 @@ projectName <- c("Job Skillset Seeking Recommender")
 
 
 library(shiny)
+library(plotly)
 
 ##################################wordcloud#############################
 library(tm)
@@ -131,7 +132,11 @@ ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
                                tabsetPanel(
                                    tabPanel("user selection1",textOutput("selecteds_sk1")),
                                    tabPanel("user selection2",textOutput("result")), # multi sel dropdown
-                                   tabPanel("word cloud",plotOutput("plot")) # word cloud
+                                   tabPanel("word cloud",plotOutput("plot")), # word cloud
+                                   tabPanel("radar chart",plotlyOutput("plot1", width = 800, height=700),
+                                            p("To visualize the graph of the job, click the icon at side of names 
+             in the graphic legend.",
+                                              style = "font-size:25px")) # radar chart
                                )
                            )
                        )
@@ -188,6 +193,38 @@ server <- function(input, output, session) {
     output$result <- renderText({
         paste("You chose", input$skill)
     })
+    
+    ##################################radar chart#############################
+    output$plot1 <- renderPlotly({
+        
+        plot_ly(
+            type = 'scatterpolar',
+            r = c(39, 28, 8, 7, 28, 39),
+            theta = c('programing','Data Analysis','Project Management', 'Degree', 'years of experience', 'Salary'),
+            name = 'Job A',
+            fill = 'toself'
+        ) %>%
+            add_trace(
+                r = c(1.5, 10, 39, 31, 15, 1.5),
+                theta = c('programing','Data Analysis','Project Management', 'Degree', 'years of experience', 'Salary'),
+                name = 'Job B'
+            ) %>%
+        
+        layout(
+            polar = list(
+                radialaxis = list(
+                    visible = T,
+                    range = c(0,50)
+                )
+            ),
+            
+            showlegend=TRUE
+            
+            
+        )
+    })
+    
+    ##################################radar chart#############################
     
     ##################################wordcloud#############################
     # Define a reactive expression for the document term matrix
