@@ -48,7 +48,13 @@ library(wordcloud)
 ##################################wordcloud#############################
 
 ################################# DF ###################################
+<<<<<<< HEAD
 key_words <- read.csv('Categorized List_2.csv')
+=======
+#key_words <- read.csv('/Users/miketrz/Downloads/DTSC_630_DAta/Categorized List_2.csv')
+key_words <- Categorized.List_2
+
+>>>>>>> 03fbcdc46c6312de024f8fa337342f326621bf2c
 
 # key_words <- Categorized.List_2
 major_words = key_words$Key_Words[key_words$Grouping == 'major']
@@ -64,8 +70,14 @@ list = c('computer science','something' ,'sales')
 
 values = c(5,6,7,8,9,10,11)
 
+<<<<<<< HEAD
 data <- read.csv('Categories_KW_Normalized_test.csv')
 # data <- Categories_KW_Normalized_test
+=======
+#data <- read.csv('/Users/miketrz/Downloads/DTSC_630_DAta/Categories_KW_Normalized_test.csv')
+data <- Categories_KW_Normalized_test
+
+>>>>>>> 03fbcdc46c6312de024f8fa337342f326621bf2c
 df <- data.frame(matrix(ncol = 11, nrow = 0))
 colnames(df)<-c('Cateogry', 'Major', 'Major_W', 'Specialty', 'Specialty_W', 
                 'Tool', 'Tool_W', 'Trait', 'Trait_W', 'Environment', 'Environment_W')
