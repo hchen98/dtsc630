@@ -47,13 +47,157 @@ library(wordcloud)
 
 ##################################wordcloud#############################
 
+################################# DF ###################################
+key_words <- read.csv('/Users/miketrz/Downloads/DTSC_630_DAta/Categorized List_2.csv')
+
+
+major_words = key_words$Key_Words[key_words$Grouping == 'major']
+tool_words = key_words$Key_Words[key_words$Grouping == 'tool']
+trait_words = key_words$Key_Words[key_words$Grouping == 'trait']
+spec_words = key_words$Key_Words[key_words$Grouping == 'specialty']
+env_words = key_words$Key_Words[key_words$Grouping == 'environment']
+
+
+user_words = c()
+list = c('computer science','something' ,'sales')
+
+
+values = c(5,6,7,8,9,10,11)
+
+data <- read.csv('/Users/miketrz/Downloads/DTSC_630_DAta/Categories_KW_Normalized_test.csv')
+
+df <- data.frame(matrix(ncol = 11, nrow = 0))
+colnames(df)<-c('Cateogry', 'Major', 'Major_W', 'Specialty', 'Specialty_W', 
+                'Tool', 'Tool_W', 'Trait', 'Trait_W', 'Environment', 'Environment_W')
+
+#New csv creation
+for(i in 1:nrow(data)) {
+  
+  category<- data$Category[i]# for-loop over rows
+  
+  major<- as.list(strsplit(data$Major, "', '")[[i]]) 
+  major<- c(lapply(major, function(x) gsub("\\[", "", gsub("\\]", "", gsub("'", "", x)))))
+  #print(major)
+  
+  major_w<- as.list(strsplit(data$Major_Weights, "', '")[[i]]) 
+  major_w<- c(lapply(major_w, function(x) gsub("\\[", "", gsub("\\]", "", gsub("'", "", x)))))
+  
+  specialty<- as.list(strsplit(data$Specialty, "', '")[[i]]) 
+  specialty<- c(lapply(specialty, function(x) gsub("\\[", "", gsub("\\]", "", gsub("'", "", x)))))
+  
+  specialty_w<- as.list(strsplit(data$Specialty_Weights, "', '")[[i]]) 
+  specialty_w<- c(lapply(specialty_w, function(x) gsub("\\[", "", gsub("\\]", "", gsub("'", "", x)))))
+  
+  tool<- as.list(strsplit(data$Tool, "', '")[[i]]) 
+  tool<- c(lapply(tool, function(x) gsub("\\[", "", gsub("\\]", "", gsub("'", "", x)))))
+  
+  tool_w<- as.list(strsplit(data$Tool_Weights, "', '")[[i]]) 
+  tool_w<- c(lapply(tool_w, function(x) gsub("\\[", "", gsub("\\]", "", gsub("'", "", x)))))
+  
+  trait<- as.list(strsplit(data$Trait, "', '")[[i]]) 
+  trait<- c(lapply(trait, function(x) gsub("\\[", "", gsub("\\]", "", gsub("'", "", x)))))
+  
+  trait_w<- as.list(strsplit(data$Trait_Weights, "', '")[[i]]) 
+  trait_w<- c(lapply(trait_w, function(x) gsub("\\[", "", gsub("\\]", "", gsub("'", "", x)))))
+  
+  env<- as.list(strsplit(data$Environment, "', '")[[i]]) 
+  env<- c(lapply(env, function(x) gsub("\\[", "", gsub("\\]", "", gsub("'", "", x)))))
+  
+  env_w<- as.list(strsplit(data$Environment_Weights, "', '")[[i]]) 
+  env_w<- c(lapply(env_w, function(x) gsub("\\[", "", gsub("\\]", "", gsub("'", "", x)))))
+  
+  df[i, ]<- list(category, list(major),list(as.numeric(major_w)), list(specialty), 
+                 list(as.numeric(specialty_w)), list(tool), list(as.numeric(tool_w)), 
+                 list(trait), list(as.numeric(trait_w)), list(env), 
+                 list(as.numeric(env_w)))
+}
+
+
+
+################################ DF ####################################
+################################Func RADAR####################################
+
+radar_values <- function(user_list, category){
+  #if category == None case
+  m_words <- c(unlist(df$Major[df$Cateogry == category]))
+  m_weights <- c(unlist(df$Major_W[df$Cateogry == category]))
+  m_vals<-which(m_words %in% user_list)
+  if (length(m_words) == 0)
+  {
+    m_total = 1
+  }
+  else if (length(m_vals) == 0){
+    m_total = 0
+  }
+  else{
+    m_total <- sum(m_weights[m_vals])
+  }
+  
+  s_words <- c(unlist(df$Specialty[df$Cateogry == category]))
+  s_weights <- c(unlist(df$Specialty_W[df$Cateogry == category]))
+  s_vals<-which(s_words %in% user_list)
+  if (length(s_words) == 0)
+  {
+    s_total = 1
+  }
+  else if (length(s_vals) == 0){
+    s_total = 0
+  }
+  else{
+    s_total <- sum(s_weights[s_vals])
+  }
+  
+  to_words <- c(unlist(df$Tool[df$Cateogry == category]))
+  to_weights <- c(unlist(df$Tool_W[df$Cateogry == category]))
+  to_vals<-which(to_words %in% user_list)
+  if (length(to_words) == 0)
+  {
+    to_total = 1
+  }
+  else if (length(to_vals) == 0){
+    to_total = 0
+  }
+  else{
+    to_total <- sum(to_weights[to_vals])
+  }
+  
+  tr_words <- c(unlist(df$Trait[df$Cateogry == category]))
+  tr_weights <- c(unlist(df$Trait_W[df$Cateogry == category]))
+  tr_vals<-which(tr_words %in% user_list)
+  if (length(tr_words) == 0)
+  {
+    tr_total = 1
+  }
+  else if (length(tr_vals) == 0){
+    tr_total = 0
+  }
+  else{
+    tr_total <- sum(tr_weights[tr_vals])
+  }
+  
+  e_words <- c(unlist(df$Environment[df$Cateogry == category]))
+  e_weights <- c(unlist(df$Environment_W[df$Cateogry == category]))
+  e_vals<-which(e_words %in% user_list)
+  if (length(e_words) == 0)
+  {
+    e_total = 1
+  }
+  else if (length(e_vals) == 0){
+    e_total = 0
+  }
+  else{
+    e_total <- sum(e_weights[e_vals])
+  }
+  return (c(m_total, s_total, to_total, tr_total, e_total))
+}
+################################ Func RADAR #################################
 
 # Define UI for application that draws a histogram
 ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
                  ##################################Intro Page#############################
-                 tabPanel("Reference", 
-                          tags$iframe(style="height:400px; width:100%; scrolling=yes", 
-                                            src="test.pdf")),
+                 #tabPanel("Reference", 
+                  #        tags$iframe(style="height:400px; width:100%; scrolling=yes", 
+                   #                         src="test.pdf")),
                  ##################################Intro Page#############################
                  ##################################Graghic Page#############################
                    tabPanel("Graphic", fluidPage(
@@ -82,8 +226,11 @@ ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
                                # multi sel dropdown
                                fluidRow(
                                    selectInput("skill", "Choose your skills:",multiple = TRUE,
-                                               list(`Programing Language` = list("Python", "C++", "Java","R"),
-                                                    `Machine learning` = list("OpenCV", "SVM", "CNN","NLP","RNN"))
+                                               list(`Major` = major_words,
+                                                    `Specialty` = spec_words,
+                                                    `Tool` = tool_words,
+                                                    `Trait` = trait_words,
+                                                    `Environment` = env_words)
                                    ),
                                ),
                                
@@ -162,37 +309,48 @@ ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
-    
     output$selecteds_sk1 <- renderText({ 
         paste("You have selected", input$checkGroup)
     })
     
     # multi sel dropdown
     output$result <- renderText({
-        paste("You chose", input$skill)
+      list_of_words <- c(list_of_words, input$skill)
+      print(list_of_words)
+      vals<-which(list_of_words %in% list)
+      #print(vals)
+      paste("You chose", list(values[which(list_of_words %in% list)]))
     })
     
     ##################################radar chart#############################
     output$plot1 <- renderPlotly({
-        
+      user_words <- c(user_words, input$skill)
+      category1 <- 'program management'
+      category2 <- 'technical solutions'
+      
         plot_ly(
             type = 'scatterpolar',
-            r = c(39, 28, 8, 7, 28, 39),
-            theta = c('programing','Data Analysis','Project Management', 'Degree', 'years of experience', 'Salary'),
-            name = 'Job A',
-            fill = 'toself'
+            r = radar_values(user_words, category1), #Returns vector of values to be used
+            theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+            name = category1,
+            fill = 'toself',
+            mode = 'markers'
         ) %>%
-            add_trace(
-                r = c(1.5, 10, 39, 31, 15, 1.5),
-                theta = c('programing','Data Analysis','Project Management', 'Degree', 'years of experience', 'Salary'),
-                name = 'Job B'
-            ) %>%
-        
+          add_trace(
+            r = radar_values(user_words, category2), #Returns vector of values to be used
+            theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+            name = category2,
+            mode = 'markers',
+            visible = TRUE
+           
+          ) %>%
+            
+          
         layout(
             polar = list(
                 radialaxis = list(
                     visible = T,
-                    range = c(0,50)
+                    range = c(0,1)
                 )
             ),
             
@@ -234,3 +392,4 @@ server <- function(input, output, session) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)
+
