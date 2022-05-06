@@ -48,24 +48,24 @@ library(wordcloud)
 ##################################wordcloud#############################
 
 ################################# DF ###################################
-key_words <- read.csv('/Users/miketrz/Downloads/DTSC_630_DAta/Categorized List_2.csv')
+key_words <- read.csv('Categorized List_2.csv')
 
-
+# key_words <- Categorized.List_2
 major_words = key_words$Key_Words[key_words$Grouping == 'major']
 tool_words = key_words$Key_Words[key_words$Grouping == 'tool']
 trait_words = key_words$Key_Words[key_words$Grouping == 'trait']
 spec_words = key_words$Key_Words[key_words$Grouping == 'specialty']
 env_words = key_words$Key_Words[key_words$Grouping == 'environment']
 
-
+list_of_words = c()
 user_words = c()
 list = c('computer science','something' ,'sales')
 
 
 values = c(5,6,7,8,9,10,11)
 
-data <- read.csv('/Users/miketrz/Downloads/DTSC_630_DAta/Categories_KW_Normalized_test.csv')
-
+data <- read.csv('Categories_KW_Normalized_test.csv')
+# data <- Categories_KW_Normalized_test
 df <- data.frame(matrix(ncol = 11, nrow = 0))
 colnames(df)<-c('Cateogry', 'Major', 'Major_W', 'Specialty', 'Specialty_W', 
                 'Tool', 'Tool_W', 'Trait', 'Trait_W', 'Environment', 'Environment_W')
@@ -194,11 +194,7 @@ radar_values <- function(user_list, category){
 
 # Define UI for application that draws a histogram
 ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
-                 ##################################Intro Page#############################
-                 #tabPanel("Reference", 
-                  #        tags$iframe(style="height:400px; width:100%; scrolling=yes", 
-                   #                         src="test.pdf")),
-                 ##################################Intro Page#############################
+
                  ##################################Graghic Page#############################
                    tabPanel("Graphic", fluidPage(
                        
@@ -209,19 +205,6 @@ ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
                        sidebarLayout(
                            sidebarPanel(
                                # Add weidgts
-                               
-                               # fluidRow(
-                               #     column(3,
-                               #            checkboxGroupInput("checkGroup",
-                               #                               h3("Select Program languages skillset(s):"),
-                               #                               choices = list("Python" = "Python",
-                               #                                              "R" = "R",
-                               #                                              "Java" = "Java",
-                               #                                              "SQL" = "SQL",
-                               #                                              "C++" = "C++"),
-                               #                               selected = "Python")),
-                               # ),
-                               
                                
                                # multi sel dropdown
                                fluidRow(
@@ -255,8 +238,8 @@ ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
                            # Show a plot 
                            mainPanel(
                                tabsetPanel(
-                                   tabPanel("user selection1",textOutput("selecteds_sk1")),
-                                   tabPanel("user selection2",textOutput("result")), # multi sel dropdown
+                                   tabPanel("raw datasets",textOutput("selecteds_sk1")),
+                                   tabPanel("static plots",textOutput("result")), # multi sel dropdown
                                    tabPanel("word cloud",plotOutput("plot")), # word cloud
                                    tabPanel("radar chart",plotlyOutput("plot1", width = 800, height=700),
                                             p("To visualize the graph of the job, click the icon at side of names 
@@ -267,7 +250,7 @@ ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
                        )
                    )),
                  ##################################Graghic Page#############################
-                 
+          
                  ##################################About Page###############################
                    tabPanel("About", 
                             
@@ -295,7 +278,7 @@ ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
                             ),
                  
                  ##################################About Page###############################
-                 
+                 ##################################Team Page###############################
                    tabPanel("Team", 
                             p("Hui(Henry) Chen",style = "font-size:25px"),
                             p("email: hchen60@nyit.edu"),
@@ -392,4 +375,3 @@ server <- function(input, output, session) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)
-
