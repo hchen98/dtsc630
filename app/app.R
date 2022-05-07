@@ -39,8 +39,9 @@ library(plotly)
 library(reshape)
 library(tm)
 library(wordcloud)
-
-
+library(ggplot2)
+library(tidyverse)
+library(ggrepel)
 
 
 
@@ -52,8 +53,8 @@ library(DT) # library to display datatable
 
 
 ################################# DF ###################################
+#Key_words_dataframe
 key_words <- read.csv('Categorized List_2.csv')
-
 
 # key_words <- Categorized.List_2
 major_words = key_words$Key_Words[key_words$Grouping == 'major']
@@ -61,14 +62,13 @@ tool_words = key_words$Key_Words[key_words$Grouping == 'tool']
 trait_words = key_words$Key_Words[key_words$Grouping == 'trait']
 spec_words = key_words$Key_Words[key_words$Grouping == 'specialty']
 env_words = key_words$Key_Words[key_words$Grouping == 'environment']
-
-list_of_words = c()
 user_words = c()
-list = c('computer science','something' ,'sales')
 
+#Inital Dataframe
+jobs <- read.csv('job_skills.csv')
+jobs$Country <- sapply(strsplit(jobs$Location, ", ", fixed=TRUE), tail, 1)
 
-values = c(5,6,7,8,9,10,11)
-
+#Keyword w/ category dataframe
 data <- read.csv('Categories_KW_Normalized_test.csv')
 # data <- Categories_KW_Normalized_test
 
@@ -136,7 +136,7 @@ radar_values <- function(user_list, category){
     m_total = 0
   }
   else{
-    m_total <- sum(m_weights[m_vals])
+    m_total <- 1
   }
   
   s_words <- c(unlist(df$Specialty[df$Cateogry == category]))
@@ -197,7 +197,19 @@ radar_values <- function(user_list, category){
   return (c(m_total, s_total, to_total, tr_total, e_total))
 }
 ################################ Func RADAR #################################
+################################# Func PIE #################################
+pie_data <- jobs_df[order(-jobs_df$Count),][1:10,]
+remaining <- tail(jobs_df[order(-jobs_df$Count),], -10)
+pie_data[11,]<- list('Other', sum(remaining$Count))
 
+#pie_data <-
+pie_data$Country <- factor(pie_data$Country, levels = pie_data$Country)
+pie_data$Percent <- pie_data$Count/sum(pie_data$Count)*100
+pie_pos <- pie_data %>% 
+  mutate(csum = rev(cumsum(rev(Percent))), 
+         pos = Percent/2 + lead(csum, 1),
+         pos = if_else(is.na(pos), Percent/2, pos))
+################################# Func PIE #################################
 # Define UI for application that draws a histogram
 ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
 
@@ -225,9 +237,9 @@ ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
                                
                                ##################################wordcloud#############################
                                # # Sidebar with a slider and selection inputs
-                               # fluidRow(
-                               #     selectInput("selection", "Choose a job title:",
-                               #                 choices = jobs),
+                                fluidRow(
+                                    selectInput("selection", "Choose a job title:",
+                                                choices = df$Cateogry)),
                                #     actionButton("update", "Change"),
                                #     hr(),
                                #     sliderInput("freq",
@@ -248,7 +260,8 @@ ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
                                             h2("Key Words Table"),
                                             DT::dataTableOutput("mytable")
                                             ),
-                                   tabPanel("static plots",textOutput("result")), # multi sel dropdown
+                                   tabPanel("static plots",plotOutput("plot3"),
+                                            plotOutput(("plot4"))), # multi sel dropdown
                                    tabPanel("word cloud",plotOutput("plot")), # word cloud
                                    tabPanel("radar chart",plotlyOutput("plot1", width = 800, height=700),
                                             p("To visualize the graph of the job, click the icon at side of names 
@@ -306,37 +319,176 @@ server <- function(input, output, session) {
     })
     
     # multi sel dropdown
-    output$result <- renderText({
-      list_of_words <- c(list_of_words, input$skill)
-      print(list_of_words)
-      vals<-which(list_of_words %in% list)
-      #print(vals)
-      paste("You chose", list(values[which(list_of_words %in% list)]))
-    })
+
     
     ##################################radar chart#############################
     output$plot1 <- renderPlotly({
       user_words <- c(user_words, input$skill)
-      category1 <- 'program management'
-      category2 <- 'technical solutions'
-      
+
+      category_list <- df$Cateogry[df$Cateogry != input$selection]
         plot_ly(
             type = 'scatterpolar',
-            r = radar_values(user_words, category1), #Returns vector of values to be used
+            r = radar_values(user_words, input$selection), #Returns vector of values to be used
             theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
-            name = category1,
+            name = input$selection,
             fill = 'toself',
             mode = 'markers'
-        ) %>%
+          
+        )%>%
+           add_trace(
+              r = radar_values(user_words, category_list[1]), #Returns vector of values to be used
+              theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+              name = category_list[1],
+              mode = 'markers',
+              visible = 'legendonly'
+            )%>%
           add_trace(
-            r = radar_values(user_words, category2), #Returns vector of values to be used
+            r = radar_values(user_words, category_list[2]), #Returns vector of values to be used
             theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
-            name = category2,
+            name = category_list[2],
             mode = 'markers',
-            visible = TRUE
-           
-          ) %>%
-            
+            visible = 'legendonly'
+          )%>%
+          add_trace(
+            r = radar_values(user_words, category_list[3]), #Returns vector of values to be used
+            theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+            name = category_list[3],
+            mode = 'markers',
+            visible = 'legendonly'
+          )%>%
+          add_trace(
+            r = radar_values(user_words, category_list[4]), #Returns vector of values to be used
+            theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+            name = category_list[4],
+            mode = 'markers',
+            visible = 'legendonly'
+          )%>%
+          add_trace(
+            r = radar_values(user_words, category_list[5]), #Returns vector of values to be used
+            theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+            name = category_list[5],
+            mode = 'markers',
+            visible = 'legendonly'
+          )%>%
+          add_trace(
+            r = radar_values(user_words, category_list[6]), #Returns vector of values to be used
+            theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+            name = category_list[6],
+            mode = 'markers',
+            visible = 'legendonly'
+          )%>%
+          add_trace(
+            r = radar_values(user_words, category_list[7]), #Returns vector of values to be used
+            theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+            name = category_list[7],
+            mode = 'markers',
+            visible = 'legendonly'
+          )%>%
+          add_trace(
+            r = radar_values(user_words, category_list[8]), #Returns vector of values to be used
+            theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+            name = category_list[8],
+            mode = 'markers',
+            visible = 'legendonly'
+          )%>%
+          add_trace(
+            r = radar_values(user_words, category_list[9]), #Returns vector of values to be used
+            theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+            name = category_list[9],
+            mode = 'markers',
+            visible = 'legendonly'
+          )%>%
+          add_trace(
+            r = radar_values(user_words, category_list[10]), #Returns vector of values to be used
+            theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+            name = category_list[10],
+            mode = 'markers',
+            visible = 'legendonly'
+          )%>%
+          add_trace(
+            r = radar_values(user_words, category_list[11]), #Returns vector of values to be used
+            theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+            name = category_list[11],
+            mode = 'markers',
+            visible = 'legendonly'
+          )%>%
+          add_trace(
+            r = radar_values(user_words, category_list[12]), #Returns vector of values to be used
+            theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+            name = category_list[12],
+            mode = 'markers',
+            visible = 'legendonly'
+          )%>%
+          add_trace(
+            r = radar_values(user_words, category_list[13]), #Returns vector of values to be used
+            theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+            name = category_list[13],
+            mode = 'markers',
+            visible = 'legendonly'
+          )%>%
+          add_trace(
+            r = radar_values(user_words, category_list[14]), #Returns vector of values to be used
+            theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+            name = category_list[14],
+            mode = 'markers',
+            visible = 'legendonly'
+          )%>%
+          add_trace(
+            r = radar_values(user_words, category_list[15]), #Returns vector of values to be used
+            theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+            name = category_list[15],
+            mode = 'markers',
+            visible = 'legendonly'
+          )%>%
+          add_trace(
+            r = radar_values(user_words, category_list[16]), #Returns vector of values to be used
+            theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+            name = category_list[16],
+            mode = 'markers',
+            visible = 'legendonly'
+          )%>%
+          add_trace(
+            r = radar_values(user_words, category_list[17]), #Returns vector of values to be used
+            theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+            name = category_list[17],
+            mode = 'markers',
+            visible = 'legendonly'
+          )%>%
+          add_trace(
+            r = radar_values(user_words, category_list[18]), #Returns vector of values to be used
+            theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+            name = category_list[18],
+            mode = 'markers',
+            visible = 'legendonly'
+          )%>%
+          add_trace(
+            r = radar_values(user_words, category_list[19]), #Returns vector of values to be used
+            theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+            name = category_list[19],
+            mode = 'markers',
+            visible = 'legendonly'
+          )%>%
+          add_trace(
+            r = radar_values(user_words, category_list[20]), #Returns vector of values to be used
+            theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+            name = category_list[20],
+            mode = 'markers',
+            visible = 'legendonly'
+          )%>%
+          add_trace(
+            r = radar_values(user_words, category_list[21]), #Returns vector of values to be used
+            theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+            name = category_list[21],
+            mode = 'markers',
+            visible = 'legendonly'
+          )%>%
+          add_trace(
+            r = radar_values(user_words, category_list[22]), #Returns vector of values to be used
+            theta = c('Major', 'Speciality', 'Tools', 'Traits', 'Environment'),
+            name = category_list[22],
+            mode = 'markers',
+            visible = 'legendonly'
+          )%>%
           
         layout(
             polar = list(
@@ -353,6 +505,46 @@ server <- function(input, output, session) {
     })
     
     ##################################radar chart#############################
+    ##################################static plot #############################
+    output$plot3 <- renderPlot({
+      ggplot(data = jobs, aes(x=Category))+
+        geom_bar() +
+        labs(title="Job Posting Distribution",
+              x ="Job Fields", y = "Count") +
+        theme(axis.text.x = element_text(angle = 60, hjust = 1),
+              plot.title = element_text(hjust = 0.5))
+    }) 
+    
+    
+    
+    
+    ###############################Pie Chart################################
+  
+    
+    output$plot4<- renderPlot({ggplot(data = pie_data, aes(x="",y = Percent, fill = Country))+
+      geom_bar(stat = 'identity')+
+      scale_fill_grey()+
+      geom_col(width = 1)+
+      ggtitle("Country Distribution of Jobs")+
+      #geom_label(aes(label = percent(Count/sum(Count), accuracy = 1)), color = "white",
+      #          position = position_stack(vjust = 0.5),
+      #         show.legend = FALSE)+
+      geom_label_repel(data = pie_pos,
+                       aes(y = pos, label = paste0(pie_data$Percent, "%")),
+                       size = 4, nudge_x = 1,color = 'white', show.legend = FALSE)+
+      coord_polar(theta = "y")+
+      theme_gray()+
+      theme(axis.title.x = element_blank(),
+            axis.text.x=element_blank(),
+            axis.title.y = element_blank(),
+            panel.border = element_blank(),
+            panel.grid=element_blank(),
+            axis.ticks = element_blank(),
+            plot.title=element_text(size=12, face="bold.italic",margin = margin(t=40, b= -20))
+      )})
+    
+    ##################################Pie Chart################################
+    ##################################static plot #############################
     
     ##################################raw datatable#############################    
     # render the table set 
