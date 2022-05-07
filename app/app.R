@@ -68,6 +68,12 @@ user_words = c()
 jobs <- read.csv('job_skills.csv')
 jobs$Country <- sapply(strsplit(jobs$Location, ", ", fixed=TRUE), tail, 1)
 
+jobs_df <- data.frame(matrix(ncol=2, nrow = 0))
+colnames(jobs_df)<-c('Country', 'Count')
+for (i in unique(jobs$Country)){
+  count <-nrow(jobs[jobs$Country == i,])
+  jobs_df[i,] <- list(i, count)
+}
 #Keyword w/ category dataframe
 data <- read.csv('Categories_KW_Normalized_test.csv')
 # data <- Categories_KW_Normalized_test
@@ -256,9 +262,19 @@ ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
                            # Show a plot 
                            mainPanel(
                                tabsetPanel(
-                                   tabPanel("raw datasets",
-                                            h2("Key Words Table"),
-                                            DT::dataTableOutput("mytable")
+                                   tabPanel("Datasets",
+                                            tabsetPanel(
+                                              tabPanel("Original Data",
+                                                      h2("Original Dataset"),
+                                                      DT::dataTableOutput("mainTable")),
+                                              tabPanel("Job Category \nAnd Key Words",
+                                                      h2("Job Category \nAnd Key Words"),
+                                                      DT::dataTableOutput("catKwTable")),
+                                              tabPanel("Key Words \nClassified",
+                                                      h2("Key Words"),
+                                                      DT::dataTableOutput("kwTable")),
+                                                      type = "pills")
+                                                
                                             ),
                                    tabPanel("static plots",plotOutput("plot3"),
                                             plotOutput(("plot4"))), # multi sel dropdown
@@ -548,9 +564,30 @@ server <- function(input, output, session) {
     
     ##################################raw datatable#############################    
     # render the table set 
-    output$mytable = DT::renderDataTable({
+    output$kwTable = DT::renderDataTable({
       key_words
     })
+    output$mainTable = DT::renderDataTable({
+      jobs
+    },options = list(columnDefs = list(list(
+      targets = c(5,6,7),
+      render = JS(
+        "function(data, type, row, meta) {",
+        "return type === 'display' && data.length > 20 ?",
+        "'<span title=\"' + data + '\">' + data.substr(0, 60) + '...</span>' : data;",
+        "}")
+    ))), callback = JS('table.page(3).draw(false);'))
+    
+    output$catKwTable = DT::renderDataTable({
+      data
+    },options = list(columnDefs = list(list(
+      targets = c(3,4,5,6,7,8,9,10,11,12),
+      render = JS(
+        "function(data, type, row, meta) {",
+        "return type === 'display' && data.length > 50 ?",
+        "'<span title=\"' + data + '\">' + data.substr(0, 50) + '...</span>' : data;",
+        "}")
+    ))), callback = JS('table.page(3).draw(false);'))
     ##################################raw datatable#############################    
     
     ##################################wordcloud#############################
@@ -583,3 +620,7 @@ server <- function(input, output, session) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)
+
+    
+
+
