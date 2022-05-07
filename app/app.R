@@ -46,6 +46,10 @@ library(wordcloud)
 
 
 ##################################wordcloud#############################
+# install.packages("DT")
+library(DT) # library to display datatable
+
+
 
 ################################# DF ###################################
 key_words <- read.csv('Categorized List_2.csv')
@@ -240,7 +244,10 @@ ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
                            # Show a plot 
                            mainPanel(
                                tabsetPanel(
-                                   tabPanel("raw datasets",textOutput("selecteds_sk1")),
+                                   tabPanel("raw datasets",
+                                            h2("Key Words Table"),
+                                            DT::dataTableOutput("mytable")
+                                            ),
                                    tabPanel("static plots",textOutput("result")), # multi sel dropdown
                                    tabPanel("word cloud",plotOutput("plot")), # word cloud
                                    tabPanel("radar chart",plotlyOutput("plot1", width = 800, height=700),
@@ -346,6 +353,13 @@ server <- function(input, output, session) {
     })
     
     ##################################radar chart#############################
+    
+    ##################################raw datatable#############################    
+    # render the table set 
+    output$mytable = DT::renderDataTable({
+      key_words
+    })
+    ##################################raw datatable#############################    
     
     ##################################wordcloud#############################
     # # Define a reactive expression for the document term matrix
