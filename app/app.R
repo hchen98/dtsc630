@@ -313,6 +313,7 @@ ui <- navbarPage(title = "DTSC 630 - M01/Spring 2022",
                             p("Word Cloud"),
                             p("Pie chart"),
                             p("Radar Charts"),
+                            tags$iframe(style="height:1000px; width:100%", src="test.pdf")#testing pdf view
 
                             ),
                  
