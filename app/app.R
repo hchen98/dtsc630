@@ -65,7 +65,8 @@ env_words = key_words$Key_Words[key_words$Grouping == 'environment']
 user_words = c()
 
 #Inital Dataframe
-jobs <- read.csv('job_skills.csv')
+skills<- read.csv('job_skills.csv')
+jobs <- skills
 jobs$Country <- sapply(strsplit(jobs$Location, ", ", fixed=TRUE), tail, 1)
 
 jobs_df <- data.frame(matrix(ncol=2, nrow = 0))
@@ -513,7 +514,7 @@ server <- function(input, output, session) {
                     range = c(0,1)
                 )
             ),
-            
+            legend = list(orientation = 'h'),
             showlegend=TRUE
             
             
@@ -568,7 +569,7 @@ server <- function(input, output, session) {
       key_words
     })
     output$mainTable = DT::renderDataTable({
-      jobs
+      skills
     },options = list(columnDefs = list(list(
       targets = c(5,6,7),
       render = JS(
