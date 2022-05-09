@@ -416,12 +416,12 @@ ui <- navbarPage(
               "Specific Skillset",
               mainPanel(
                 br(),
-                p("Category: Major", style = "color:#999999"),
-                p("Category: Specialty", style = "color:#777777"),
-                p("Category: Tool", style = "color:#555555"),
-                p("Category: Trait", style = "color:#333333"),
-                p("Category: Environment", style = "color:#111111"),
-                br(),
+                #p("Category: Major", style = "color:#999999"),
+                #p("Category: Specialty", style = "color:#777777"),
+                #p("Category: Tool", style = "color:#555555"),
+                #p("Category: Trait", style = "color:#333333"),
+                #p("Category: Environment", style = "color:#111111"),
+                #br(),
                 selectInput(
                   "subCat",
                   "Choose your skills:",
