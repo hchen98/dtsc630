@@ -1,8 +1,13 @@
-data <- read.csv('/Users/miketrz/Downloads/DTSC_630_DAta/Categories_KW_Normalized_test.csv')
+# set the working dir, make a new line of your working dir
+setwd("/home/hui/Projects/dtsc630_main")      # Henry's wd
+
+# read the dataset
+data <- read.csv('./datasets/Categories_KW_Normalized_test.csv')
 
 df <- data.frame(matrix(ncol = 11, nrow = 0))
 colnames(df)<-c('Cateogry', 'Major', 'Major_W', 'Specialty', 'Specialty_W', 
                 'Tool', 'Tool_W', 'Trait', 'Trait_W', 'Environment', 'Environment_W')
+
 #New csv creation
 for(i in 1:nrow(data)) {
   
