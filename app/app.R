@@ -28,7 +28,7 @@
 #    http://shiny.rstudio.com/
 #
 ############################################################################
-projectName <- c("Job Skillset Seeking Recommender")
+projectName <- c("Job Skillset Visulization")
 
 
 library(shiny)
@@ -285,12 +285,63 @@ pie_pos <- pie_data %>%
 ################################# Func PIE #################################
 # Define UI for application that draws a histogram
 ui <- navbarPage(
-  title = "DTSC 630 - M01/Spring 2022",
+  title = projectName,
+  
+  ##################################About Page###############################
+  tabPanel(
+    "About",
+    
+    h4("Group Project Info:"),
+    p("DTSC 630 - M01/Spring 2022"),
+    p("Data Visualization"),
+    p("Dr. Cheng"),
+    p(a("Demo Web", href = "https://bofan.shinyapps.io/DTSC630/")),
+    
+    hr(),
+    h4("Team:"),
+    p("Hui(Henry) Chen", style = "font-size:20px"),
+    p("hchen60@nyit.edu"),
+    p("Bofan He", style = "font-size:20px"),
+    p("bhe@nyit.edu"),
+    p("Michael Trzaskoma", style = "font-size:20px"),
+    p("mtrzasko@nyit.edu"),
+    
+    hr(),
+    
+    h4("Project Description:"),
+    
+    p(
+      "In this project, we are going to build a web-server based job skillset recommendation engine.
+                            The dataset is from Kaggle",
+      a("job-skills", href = "https://www.kaggle.com/datasets/niyamatalmass/google-job-skills" , target =
+          "_blank"),
+      "with 1250 records and 7 features. The users would need to input their skillset(s) in order to find the optimal job/title/position by our recommendation engine. "
+    ),
+    
+    hr(),
+    h5(
+      "Also, the interactive visualization graphs will be used in this project are as follows:"
+    ),
+    p("Word Cloud"),
+    p("Static Chart"),
+    p("Radar Charts"),
+    
+    hr(),
+    h5("Code Review"),
+    p(
+      a("Github", href = "https://github.com/hchen98/dtsc630/blob/main/app/app.R"),
+    ),
+    hr(),
+    tags$iframe(style = "height:1000px; width:100%", src =
+                  "slide.pdf"), #testing pdf view
+  ),
+  
+  ##################################About Page###############################
   
   ##################################Graghic Page#############################
   tabPanel("Graphic", fluidPage(
     # Application title
-    titlePanel(projectName),
+    # titlePanel(projectName),
     
     # Sidebar with a slider input for number of bins
     sidebarLayout(sidebarPanel(
@@ -405,58 +456,7 @@ ui <- navbarPage(
   )),
   ##################################Graghic Page#############################
   
-  ##################################About Page###############################
-  tabPanel(
-    "About",
-    
-    h4("Group Project Info:"),
-    p("DTSC 630 - M01/Spring 2022"),
-    p("Data Visualization"),
-    p("Dr. Cheng"),
-    p(a("Demo Web", href = "https://bofan.shinyapps.io/DTSC630/")),
-    
-    
-    hr(),
-    
-    h4("Project Description:"),
-    
-    p(
-      "In this project, we are going to build a web-server based job skillset recommendation engine.
-                            The dataset is from Kaggle",
-      a("job-skills", href = "https://www.kaggle.com/code/rayjohnsoncomedy/job-skills/data?select=job_skills.csv" , target =
-          "_blank"),
-      "with 1250 records and 7 features. The users would need to input their skillset(s) in order to find the optimal job/title/position by our recommendation engine. "
-    ),
-    
-    hr(),
-    h5(
-      "Also, the interactive visualization graphs will be used in this project are as follows:"
-    ),
-    p("Word Cloud"),
-    p("Static Chart"),
-    p("Radar Charts"),
-    
-    hr(),
-    h5("Code Review"),
-    p(
-      a("Github", href = "https://github.com/hchen98/dtsc630/blob/main/app/app.R"),
-    ),
-    hr(),
-    tags$iframe(style = "height:1000px; width:100%", src =
-                  "slide.pdf"), #testing pdf view
-  ),
   
-  ##################################About Page###############################
-  ##################################Team Page###############################
-  tabPanel(
-    "Team",
-    p("Hui(Henry) Chen", style = "font-size:25px"),
-    p("hchen60@nyit.edu"),
-    p("Bofan He", style = "font-size:25px"),
-    p("bhe@nyit.edu"),
-    p("Michael Trzaskoma", style = "font-size:25px"),
-    p("mtrzasko@nyit.edu"),
-  )
 )
 
 
