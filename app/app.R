@@ -349,7 +349,7 @@ ui <- navbarPage(
           "Word Cloud",
           tabsetPanel(
             tabPanel(
-              "All Skills",
+              "Overall Skillset",
               mainPanel(
                 br(),
                 p("Category: Major", style = "color:#999999"),
@@ -362,7 +362,7 @@ ui <- navbarPage(
               ),
             ),
             tabPanel(
-              "Single Skills",
+              "Specific Skillset",
               mainPanel(
                 br(),
                 p("Category: Major", style = "color:#999999"),
@@ -842,8 +842,7 @@ server <- function(input, output, session) {
     )
   }
   
-  output$WC_ouputAllSubCat <-
-    renderWordcloud2(WC_allSubCat(input$selection, df))
+  output$WC_ouputAllSubCat <- renderWordcloud2(WC_allSubCat(input$selection, df))
   
   
   WC_singleSubCat <- function(cat, sub_type, df) {
@@ -853,36 +852,25 @@ server <- function(input, output, session) {
     n <- c()
     col_ <- c()
     
-    if (sub_type == "major") {
+    if (sub_type == "Major") {
       word <- c(append(word, c(unlist(df$Major[df$Cateogry == cat]))))
       n <- c(append(n, c(unlist(df$Major_W[df$Cateogry == cat]))))
       col_ <- c(append(col_, "#999999"))
-    } else if (sub_type == "specialty") {
-      word <- c(append(word, c(unlist(
-        df$Specialty[df$Cateogry == cat]
-      ))))
-      n <-
-        c(append(n, c(unlist(
-          df$Specialty_W[df$Cateogry == cat]
-        ))))
+    } else if (sub_type == "Specialty") {
+      word <- c(append(word, c(unlist(df$Specialty[df$Cateogry == cat]))))
+      n <- c(append(n, c(unlist(df$Specialty_W[df$Cateogry == cat]))))
       col_ <- c(append(col_, "#777777"))
-    } else if (sub_type == "tool") {
+    } else if (sub_type == "Tool") {
       word <- c(append(word, c(unlist(df$Tool[df$Cateogry == cat]))))
       n <- c(append(n, c(unlist(df$Tool_W[df$Cateogry == cat]))))
       col_ <- c(append(col_, "#555555"))
-    } else if (sub_type == "trait") {
+    } else if (sub_type == "Trait") {
       word <- c(append(word, c(unlist(df$Trait[df$Cateogry == cat]))))
       n <- c(append(n, c(unlist(df$Trait_W[df$Cateogry == cat]))))
       col_ <- c(append(col_, "#333333"))
     } else {
-      word <-
-        c(append(word, c(unlist(
-          df$Environment[df$Cateogry == cat]
-        ))))
-      n <-
-        c(append(n, c(unlist(
-          df$Environment_W[df$Cateogry == cat]
-        ))))
+      word <- c(append(word, c(unlist(df$Environment[df$Cateogry == cat]))))
+      n <- c(append(n, c(unlist(df$Environment_W[df$Cateogry == cat]))))
       col_ <- c(append(col_, "#111111"))
     }
     
@@ -901,8 +889,7 @@ server <- function(input, output, session) {
     )
   }
   
-  output$WC_singleSubCat <-
-    renderWordcloud2(WC_singleSubCat(input$selection, input$subCat, df))
+  output$WC_singleSubCat <- renderWordcloud2(WC_singleSubCat(input$selection, input$subCat, df))
   ##################################wordcloud#############################
   
 }
