@@ -342,7 +342,7 @@ ui <- navbarPage(
           )
           
         ),
-        tabPanel("static plots", plotOutput("plot3"),
+        tabPanel("Static Plots", plotOutput("plot3"),
                  plotOutput(("plot4"))),
         # multi sel dropdown
         tabPanel(
@@ -392,7 +392,7 @@ ui <- navbarPage(
         ),
         # word cloud
         tabPanel(
-          "radar chart",
+          "Radar Chart",
           plotlyOutput("plot1", width = 800, height = 700),
           p(
             "To visualize the graph of the job, click the icon at side of names
@@ -433,7 +433,7 @@ ui <- navbarPage(
       "Also, the interactive visualization graphs will be used in this project are as follows:"
     ),
     p("Word Cloud"),
-    p("Pie chart"),
+    p("Static Chart"),
     p("Radar Charts"),
     
     hr(),
@@ -451,11 +451,11 @@ ui <- navbarPage(
   tabPanel(
     "Team",
     p("Hui(Henry) Chen", style = "font-size:25px"),
-    p("email: hchen60@nyit.edu"),
+    p("hchen60@nyit.edu"),
     p("Bofan He", style = "font-size:25px"),
-    p("email: bhe@nyit.edu"),
+    p("bhe@nyit.edu"),
     p("Michael Trzaskoma", style = "font-size:25px"),
-    p("email: mtrzasko@nyit.edu"),
+    p("mtrzasko@nyit.edu"),
   )
 )
 
