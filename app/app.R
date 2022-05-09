@@ -435,9 +435,15 @@ ui <- navbarPage(
     p("Word Cloud"),
     p("Pie chart"),
     p("Radar Charts"),
-    tags$iframe(style = "height:1000px; width:100%", src =
-                  "test.pdf")#testing pdf view
     
+    hr(),
+    h5("Code Review"),
+    p(
+      a("Github", href = "https://github.com/hchen98/dtsc630/blob/main/app/app.R"),
+    ),
+    hr(),
+    tags$iframe(style = "height:1000px; width:100%", src =
+                  "slide.pdf"), #testing pdf view
   ),
   
   ##################################About Page###############################
